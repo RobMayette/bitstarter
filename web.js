@@ -5,8 +5,17 @@ var app = express.createServer(express.logger());
 var FileContents = new Buffer(fs.readFileSync('index.html'));
 var FileContString = FileContents.ToString();
 
+// Read the file and print its contents.
+var fs = require('fs')
+  , filename = 'index.html';
+fs.readFile(filename, 'utf8', function(err, data) {
+  if (err) throw err;
+  FileContentsString = data;
+});
+
+
 app.get('/', function(request, response) {
-  response.send(FileContString);
+  response.send(FileContentsString);
 });
 
 var port = process.env.PORT || 5000;
