@@ -26,6 +26,32 @@ var program = require('commander');
 var cheerio = require('cheerio');
 var HTMLFILE_DEFAULT = "index.html";
 var CHECKSFILE_DEFAULT = "checks.json";
+var URL_DEFAULT = "http://www.google.com";
+
+var sys = require('util'),
+    rest = require('restler');
+
+
+
+var getURL = function(infile) {
+//rest.get('http://google.com').on('complete', function(result) {
+ var instr = infile.toString();
+rest.get(instr).on('complete', function(result) {                                                                                             
+
+  if (result instanceof Error) {                                                                                             
+
+    sys.puts('Error: ' + result.message);
+    this.retry(5000); // try again after 5 sec
+  } else {
+      returnurl = result;
+    return returnurl;
+//  sys.puts(result);
+  }
+});
+};
+
+
+
 
 var assertFileExists = function(infile) {
     var instr = infile.toString();
@@ -61,10 +87,15 @@ var clone = function(fn) {
     return fn.bind({});
 };
 
+
+
+
+
 if(require.main == module) {
     program
         .option('-c, --checks <check_file>', 'Path to checks.json', clone(assertFileExists), CHECKSFILE_DEFAULT)
         .option('-f, --file <html_file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
+	.option('-u, --url <target_url>', 'Path to URL', clone(getURL), URL_DEFAULT)
         .parse(process.argv);
     var checkJson = checkHtmlFile(program.file, program.checks);
     var outJson = JSON.stringify(checkJson, null, 4);
